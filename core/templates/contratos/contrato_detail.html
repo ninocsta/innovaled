@@ -45,6 +45,12 @@
                         <i class="bi bi-whatsapp"></i>
                     </a>
                     </p>
+                    <p><strong>Email Financeiro:</strong> {{ contrato.cliente.email_financeiro }}</p>
+                    <p><strong>Telefone:</strong> {{ contrato.cliente.telefone_financeiro|default:"-" }}
+                    <a href="https://wa.me/{{ contrato.cliente.telefone_financeiro }}" target="_blank" class="btn btn-outline btn-sm ml-2">
+                        <i class="bi bi-whatsapp"></i>
+                    </a>
+                    </p>
                 </div>
             </div>
         </div>
@@ -227,6 +233,20 @@
                             {% endif %}
                             {% else %}
                             <p class="text-secondary">Sem pendência de vídeo (aguardando pagamento)</p>
+                            {% for video in videos_pendentes %}
+                                <li class="mb-2">
+                                    ID {{ video.id }} - Local: {{ video.local }} - Tempo: {{ video.tempo_video }}
+                                    <form method="post" action="{% url 'ativar_video' video.id %}"
+                                        class="d-inline ms-2">
+                                        {% csrf_token %}
+                                        <input type="date" name="data_subiu"
+                                            class="form-control form-control-sm d-inline-block w-auto"
+                                            placeholder="Data Upload">
+                                        <input type="hidden" name="from_detail" value="1">
+                                        <button type="submit" class="btn btn-success btn-sm">✅ Ativar</button>
+                                    </form>
+                                </li>
+                                {% endfor %}
                             {% endif %}
                         </div>
                     </div>
@@ -260,7 +280,7 @@
 
                                 <!-- Botões -->
                                 <div class="col-12 col-md-4 d-flex gap-2">
-                                    <a href="{{ doc.arquivo.url }}" target="_blank"
+                                    <a href="{% url 'servir_arquivo_contrato' doc.id %}" target="_blank"
                                         class="btn btn-outline-light btn-sm flex-fill">
                                         <i class="bi bi-download"></i> <span class="d-none d-md-inline">Baixar</span>
                                     </a>
