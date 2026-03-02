@@ -2,9 +2,12 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="text-light mb-4">📅 Contratos Vencendo</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-light mb-0">📅 Contratos Vencendo nos Próximos 2 Meses</h2>
+        <span class="badge bg-secondary fs-6">{{ page_obj.paginator.count }} contrato(s)</span>
+    </div>
 
-    {% if contratos %}
+    {% if page_obj.object_list %}
     <div class="table-responsive">
         <table class="table table-dark table-striped table-hover align-middle">
             <thead>
@@ -12,21 +15,21 @@
                     <th>ID</th>
                     <th>Cliente</th>
                     <th>Data de Vencimento</th>
-                    <th>Dias Restantes</th>
+                    <th>Tempo Restante</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                {% for contrato in contratos %}
+                {% for contrato in page_obj %}
                 <tr class="{% if contrato.data_vencimento_contrato <= hoje %}table-danger{% endif %}">
-                    <td>#{{ contrato.id_contrato|stringformat:"05d" }}</td>
+                    <td><a href="{% url 'contrato_detail' contrato.id_contrato %}" class="text-light">#{{ contrato.id_contrato|stringformat:"05d" }}</a></td>
                     <td>{{ contrato.cliente.razao_social }}</td>
                     <td>{{ contrato.data_vencimento_contrato|date:"d/m/Y" }}</td>
                     <td>
-                        {% if contrato.data_vencimento_contrato %}
-                            {{ contrato.data_vencimento_contrato|timeuntil:hoje }}
+                        {% if contrato.data_vencimento_contrato <= hoje %}
+                            <span class="badge bg-danger">Vencido</span>
                         {% else %}
-                            ---
+                            {{ contrato.data_vencimento_contrato|timeuntil:hoje }}
                         {% endif %}
                     </td>
                     <td>
@@ -40,8 +43,24 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Itens por página -->
+    <div class="d-flex justify-content-between align-items-center mt-2 mb-1">
+        <form method="get" class="d-flex align-items-center gap-2">
+            <label class="text-light mb-0">Itens por página:</label>
+            <select name="itens" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+                <option value="10" {% if itens_por_pagina == 10 %}selected{% endif %}>10</option>
+                <option value="25" {% if itens_por_pagina == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if itens_por_pagina == 50 %}selected{% endif %}>50</option>
+            </select>
+        </form>
+        <small class="text-muted">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</small>
+    </div>
+
+    {% include "partials/pagination.html" %}
+
     {% else %}
-    <div class="alert alert-success">🎉 Não há contratos vencendo.</div>
+    <div class="alert alert-success">🎉 Não há contratos vencendo nos próximos 2 meses.</div>
     {% endif %}
 </div>
 {% endblock %}

@@ -419,15 +419,39 @@ def video_create_modal(request, contrato_id):
 @login_required
 def contratos_vencendo(request):
     hoje = timezone.now().date()
-    # Pega contratos que têm data de vencimento e ainda não foram cancelados
+    limite = hoje + relativedelta(months=2)
+
     contratos = (
         Contrato.objects.filter(
             data_vencimento_contrato__isnull=False,
             data_cancelamento_contrato__isnull=True,
+            data_vencimento_contrato__lte=limite,
         )
+        .select_related("cliente")
         .order_by("data_vencimento_contrato")
     )
-    return render(request, "contratos/contratos_vencendo.html", {"contratos": contratos, "hoje": hoje})
+
+    try:
+        itens_por_pagina = int(request.GET.get("itens", 10))
+        if itens_por_pagina <= 0:
+            itens_por_pagina = 10
+    except ValueError:
+        itens_por_pagina = 10
+
+    paginator = Paginator(contratos, itens_por_pagina)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    params = request.GET.copy()
+    params.pop("page", None)
+    extra_query = "&" + params.urlencode() if params else ""
+
+    return render(request, "contratos/contratos_vencendo.html", {
+        "page_obj": page_obj,
+        "hoje": hoje,
+        "itens_por_pagina": itens_por_pagina,
+        "extra_query": extra_query,
+    })
 
 
 @login_required

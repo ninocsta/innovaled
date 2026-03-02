@@ -73,6 +73,8 @@ class ContratoForm(forms.ModelForm):
             'data_vencimento_primeira_parcela': forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}),
             'data_ultima_parcela': forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}),
             'observacoes': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'link_cobranca': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://...'}),
+            'link_notas': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://...'}),
         }
         labels = {
             'vigencia_meses': 'Vigência (em meses)',
@@ -83,6 +85,8 @@ class ContratoForm(forms.ModelForm):
             'data_vencimento_primeira_parcela': 'Vencimento da Primeira Parcela',
             'data_ultima_parcela': 'Data da Última Parcela',
             'observacoes': 'Observações',
+            'link_cobranca': 'Link de Cobrança',
+            'link_notas': 'Link de Notas',
         }
 
 

@@ -146,6 +146,9 @@ class Contrato(BaseAudit):
     forma_pagamento = models.ForeignKey(FormaPagamento, on_delete=models.SET_NULL, null=True, blank=True)
     observacoes = models.TextField(blank=True, null=True)
 
+    link_cobranca = models.URLField(max_length=500, blank=True, null=True, verbose_name="Link de Cobrança")
+    link_notas = models.URLField(max_length=500, blank=True, null=True, verbose_name="Link de Notas")
+
     status = models.ForeignKey(StatusContrato, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):

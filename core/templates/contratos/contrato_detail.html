@@ -51,6 +51,30 @@
                         <i class="bi bi-whatsapp"></i>
                     </a>
                     </p>
+                    {% if contrato.link_cobranca %}
+                    <p class="d-flex align-items-center gap-2 flex-wrap">
+                        <strong>Link de Cobrança:</strong>
+                        <a href="{{ contrato.link_cobranca }}" target="_blank" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-receipt"></i> Abrir
+                        </a>
+                        <button type="button" class="btn btn-outline-light btn-sm"
+                            onclick="navigator.clipboard.writeText('{{ contrato.link_cobranca }}'); this.innerHTML='<i class=\'bi bi-check-lg\'></i> Copiado'; setTimeout(() => this.innerHTML='<i class=\'bi bi-clipboard\'></i> Copiar', 2000)">
+                            <i class="bi bi-clipboard"></i> Copiar
+                        </button>
+                    </p>
+                    {% endif %}
+                    {% if contrato.link_notas %}
+                    <p class="d-flex align-items-center gap-2 flex-wrap">
+                        <strong>Link de Notas:</strong>
+                        <a href="{{ contrato.link_notas }}" target="_blank" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-file-earmark-text"></i> Abrir
+                        </a>
+                        <button type="button" class="btn btn-outline-light btn-sm"
+                            onclick="navigator.clipboard.writeText('{{ contrato.link_notas }}'); this.innerHTML='<i class=\'bi bi-check-lg\'></i> Copiado'; setTimeout(() => this.innerHTML='<i class=\'bi bi-clipboard\'></i> Copiar', 2000)">
+                            <i class="bi bi-clipboard"></i> Copiar
+                        </button>
+                    </p>
+                    {% endif %}
                 </div>
             </div>
         </div>
