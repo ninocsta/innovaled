@@ -101,6 +101,7 @@ class ArquivoEHealthTests(TestCase):
         assert pdf.status_code == 200 and pdf["Content-Disposition"].startswith("inline")
         assert html["Content-Disposition"].startswith("attachment")
         assert html["X-Content-Type-Options"] == "nosniff"
+        assert pdf["Cache-Control"] == "private"
 
     def test_health(self):
         assert self.client.get("/health/").status_code == 200

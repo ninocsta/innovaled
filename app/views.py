@@ -47,6 +47,7 @@ def servir_arquivo_contrato(request, documento_id):
     inline = os.path.splitext(file_path)[1].lower() in INLINE_EXTENSIONS
     response = FileResponse(open(file_path, 'rb'), as_attachment=not inline, filename=documento.filename)
     response['X-Content-Type-Options'] = 'nosniff'
+    response['Cache-Control'] = 'private'  # conteúdo com login: nunca em cache compartilhado
     return response
 
 
