@@ -21,6 +21,10 @@ services:
       CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?}
       DATABASE_URL: ${DATABASE_URL:?}
       GUNICORN_WORKERS: ${GUNICORN_WORKERS:-2}
+      # Bot Telegram global (Team Shared Variables); vazio = sem avisos.
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      TELEGRAM_THREAD_ID: ${TELEGRAM_THREAD_ID:-}
     # Contratos enviados. Sai só por view com login (servir_arquivo_contrato).
     # Restaurar os arquivos atuais aqui ANTES da primeira requisição.
     volumes:
