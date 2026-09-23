@@ -56,3 +56,51 @@ class ParcelaTests(TestCase):
         assert paga.situacao == "pago"
         assert vencida.situacao == "vencido"
         assert a_vencer.situacao == "a_vencer"
+
+
+class ArquivoEHealthTests(TestCase):
+    def setUp(self):
+        import tempfile
+        from django.contrib.auth.models import User
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.test import override_settings
+
+        from .models import DocumentoContrato
+
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        media = override_settings(MEDIA_ROOT=tmp.name)
+        media.enable()
+        self.addCleanup(media.disable)
+
+        cliente = Cliente.objects.create(razao_social="TESTE", cpf_cnpj="123", email="t@t.com")
+        contrato = Contrato.objects.create(
+            cliente=cliente, valor_mensalidade=100, vigencia_meses=12,
+            data_assinatura=datetime.date(2026, 1, 10),
+            data_vencimento_primeira_parcela=datetime.date(2026, 1, 31),
+            data_vencimento_contrato=datetime.date(2026, 12, 31),
+        )
+        self.pdf = DocumentoContrato.objects.create(
+            contrato=contrato, arquivo=SimpleUploadedFile("c.pdf", b"%PDF-1.4")
+        )
+        self.html = DocumentoContrato.objects.create(
+            contrato=contrato, arquivo=SimpleUploadedFile("x.html", b"<script>alert(1)</script>")
+        )
+        self.user = User.objects.create_user("u", password="p")
+
+    def url(self, doc):
+        return f"/app/contrato/arquivo/{doc.id}/"
+
+    def test_anonimo_nao_baixa(self):
+        assert self.client.get(self.url(self.pdf)).status_code == 403
+
+    def test_pdf_inline_e_html_como_download(self):
+        self.client.force_login(self.user)
+        pdf = self.client.get(self.url(self.pdf))
+        html = self.client.get(self.url(self.html))
+        assert pdf.status_code == 200 and pdf["Content-Disposition"].startswith("inline")
+        assert html["Content-Disposition"].startswith("attachment")
+        assert html["X-Content-Type-Options"] == "nosniff"
+
+    def test_health(self):
+        assert self.client.get("/health/").status_code == 200

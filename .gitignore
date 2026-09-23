@@ -11,3 +11,4 @@ media/
 sites-enabled/
 .env.*
 .env
+!.env.example

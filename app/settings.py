@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,8 +64,9 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 
 
+# Sem DATABASE_URL (dev local) cai no SQLite; em produção vem do painel do Coolify.
 DATABASES = {
-    "default": env.db()
+    "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
 }
 
 # Password validation
@@ -104,8 +106,20 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-MEDIA_URL = '/protected_media/'  # Essa URL não será mais servida diretamente
-MEDIA_ROOT = os.path.join(BASE_DIR, "protected_media")  # Diretório protegido
+# Nome com hash (cache-busting) só fora do DEBUG: em dev/testes não existe manifest.
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        if DEBUG
+        else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
+}
+
+# Nunca servida direto: arquivos saem só por servir_arquivo_contrato (login).
+# Em produção é um volume nomeado (docker-compose.yml).
+MEDIA_URL = '/protected_media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "protected_media")
 
 
 
