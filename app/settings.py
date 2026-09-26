@@ -117,7 +117,7 @@ STORAGES = {
 }
 
 # Nunca servida direto: arquivos saem só por servir_arquivo_contrato (login).
-# Em produção é um volume nomeado (docker-compose.yml).
+# Em produção é um volume nomeado (docker-compose.yaml).
 MEDIA_URL = '/protected_media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "protected_media")
 
